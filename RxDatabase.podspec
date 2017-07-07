@@ -1,12 +1,11 @@
 Pod::Spec.new do |s|
   s.name             = 'RxDatabase'
   s.version          = '0.1.0'
-  s.summary          = 'Flux using ReactiveX'
+  s.summary          = 'Wrapper for YapDatabase using RxSwift'
 
 
   s.description      = <<-DESC
-  Flux is a Flux-like implementation of the unidirectional data flow architecture in Swift.
-  It embraces a unidirectional data flow that only allows state mutations through declarative actions.
+  Wrapper for YapDatabase using RxSwift.
                        DESC
 
   s.homepage         = 'https://github.com/hungdv136/rx.database'
