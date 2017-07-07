@@ -20,4 +20,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'RxSwift', '~> 3.5.0'
   s.dependency 'RxCocoa', '~> 3.5.0'
+  s.dependency 'YapDatabase', '~> 3.0'
 end
