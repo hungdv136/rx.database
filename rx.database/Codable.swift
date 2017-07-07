@@ -8,19 +8,19 @@
 
 import Foundation
 
-typealias Coder = NSCoder
+public typealias Coder = NSCoder
 
-protocol Codable {
+public protocol Codable {
     init?(coder: Coder)
     func encode(with coder: Coder)
 }
 
 extension Codable {
-    var archivedData: Data {
+    public var archivedData: Data {
         return NSKeyedArchiver.archivedCodableData(withRootObject: self)
     }
     
-    static func from(_ data: Data) -> Self? {
+    public static func from(_ data: Data) -> Self? {
         return NSKeyedUnarchiver.unarchiveCodableObject(with: data)
     }
 }
@@ -46,25 +46,25 @@ private final class CoderHelper<T: Codable>: NSObject, NSCoding {
 }
 
 extension NSKeyedArchiver {
-    static func archivedCodableData<T: Codable>(withRootObject object: T) -> Data {
+    public static func archivedCodableData<T: Codable>(withRootObject object: T) -> Data {
         let helper = CoderHelper(object: object)
         return archivedData(withRootObject: helper)
     }
     
-    static func archivedCodableData<T: Codable>(withRootObject objects: [T]) -> Data {
+    public static func archivedCodableData<T: Codable>(withRootObject objects: [T]) -> Data {
         let helpers = objects.map { CoderHelper(object: $0) }
         return archivedData(withRootObject: helpers)
     }
 }
 
 extension NSKeyedUnarchiver {
-    static func unarchiveCodableObject<T: Codable>(with data: Data) -> T? {
+    public static func unarchiveCodableObject<T: Codable>(with data: Data) -> T? {
         setClass(CoderHelper<T>.self, forClassName: String(describing: T.self))
         let helper = NSKeyedUnarchiver.unarchiveObject(with: data) as? CoderHelper<T>
         return helper?.object
     }
     
-    static func unarchiveCodableObject<T: Codable>(with data: Data) -> [T]? {
+    public static func unarchiveCodableObject<T: Codable>(with data: Data) -> [T]? {
         setClass(CoderHelper<T>.self, forClassName: String(describing: T.self))
         guard let helpers = NSKeyedUnarchiver.unarchiveObject(with: data) as? [CoderHelper<T>] else {
             return nil
@@ -76,7 +76,7 @@ extension NSKeyedUnarchiver {
 extension Coder {
     //MARK: Single
     
-    func decodeCodableObject<T: Codable>(forKey key: String) -> T? {
+    public func decodeCodableObject<T: Codable>(forKey key: String) -> T? {
         setType(T.self)
         guard let helper = decodeObject(forKey: key) as? CoderHelper<T> else {
             return nil
@@ -84,7 +84,7 @@ extension Coder {
         return helper.object
     }
     
-    func encodeCodable<T: Codable>(_ object: T?, forKey key: String) {
+    public func encodeCodable<T: Codable>(_ object: T?, forKey key: String) {
         guard let object = object else { return }
         let helper = CoderHelper(object: object)
         encode(helper, forKey: key)
@@ -92,7 +92,7 @@ extension Coder {
     
     //MARK: Array
     
-    func decodeCodableObject<T: Codable>(forKey key: String) -> [T]? {
+    public func decodeCodableObject<T: Codable>(forKey key: String) -> [T]? {
         setType(T.self)
         guard let helpers = decodeObject(forKey: key) as? [CoderHelper<T>] else {
             return nil
@@ -100,38 +100,38 @@ extension Coder {
         return helpers.flatMap { $0.object }
     }
     
-    func encodeCodable<T: Codable>(_ object: [T]?, forKey key: String) {
+    public func encodeCodable<T: Codable>(_ object: [T]?, forKey key: String) {
         guard let object = object else { return }
         encodeCodable(object, forKey: key)
     }
     
-    func encodeCodable<T: Codable>(_ object: [T], forKey key: String) {
+    public func encodeCodable<T: Codable>(_ object: [T], forKey key: String) {
         let helpers = object.map { CoderHelper(object: $0) }
         encode(helpers, forKey: key)
     }
     
     //MARK: Set
     
-    func decodeCodableObject<T: Codable>(forKey key: String) -> Set<T>? {
+    public func decodeCodableObject<T: Codable>(forKey key: String) -> Set<T>? {
         guard let objects: [T] = decodeCodableObject(forKey: key) else {
             return nil
         }
         return Set(objects)
     }
     
-    func encodeCodable<T: Codable>(_ object: Set<T>?, forKey key: String) {
+    public func encodeCodable<T: Codable>(_ object: Set<T>?, forKey key: String) {
         guard let object = object else { return }
         encodeCodable(object, forKey: key)
     }
     
-    func encodeCodable<T: Codable>(_ object: Set<T>, forKey key: String) {
+    public func encodeCodable<T: Codable>(_ object: Set<T>, forKey key: String) {
         let helpers = object.map { CoderHelper(object: $0) }
         encode(helpers, forKey: key)
     }
     
     //MARK: Dictionary
     
-    func decodeCodableObject<T: Codable>(forKey key: String) -> [String: T]? {
+    public func decodeCodableObject<T: Codable>(forKey key: String) -> [String: T]? {
         setType(T.self)
         guard let helpers = decodeObject(forKey: key) as? [String: CoderHelper<T>] else {
             return nil
@@ -139,12 +139,12 @@ extension Coder {
         return helpers.flatMapValues { $0.object }
     }
     
-    func encodeCodable<T: Codable>(_ object: [String: T]?, forKey key: String) {
+    public func encodeCodable<T: Codable>(_ object: [String: T]?, forKey key: String) {
         guard let object = object else { return }
         encodeCodable(object, forKey: key)
     }
     
-    func encodeCodable<T: Codable>(_ object: [String: T], forKey key: String) {
+    public func encodeCodable<T: Codable>(_ object: [String: T], forKey key: String) {
         let dict = object.mapValues { CoderHelper(object: $0) }
         encode(dict, forKey: key)
     }

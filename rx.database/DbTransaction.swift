@@ -9,19 +9,19 @@
 import Foundation
 import YapDatabase
 
-protocol Persistable: NSCoding {
+public protocol Persistable: NSCoding {
     static var collection: String { get }
     var key: String { get }
 }
 
-protocol ReadTransaction: class {
+public protocol ReadTransaction: class {
     func objectWithKey<T: Persistable>(_ key: String) -> T?
     func objectWithKey(_ key: String, inCollection collection: String) -> AnyObject?
     func enumerateKeys(inCollection collection: String, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void)
     func enumerateKeysAndObjects(inCollection collection: String, block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void)
 }
 
-protocol WriteTransaction: ReadTransaction {
+public protocol WriteTransaction: ReadTransaction {
     func rollback()
     func save(_ object: Persistable)
     func save(_ object: Any, forKey key: String, inCollection collection: String)
@@ -30,36 +30,37 @@ protocol WriteTransaction: ReadTransaction {
 }
 
 extension YapDatabaseReadTransaction: ReadTransaction {
-    func objectWithKey<T: Persistable>(_ key: String) -> T? {
+    public func objectWithKey<T: Persistable>(_ key: String) -> T? {
         return object(forKey: key, inCollection: T.collection) as? T
     }
     
-    func objectWithKey(_ key: String, inCollection collection: String) -> AnyObject? {
+    public func objectWithKey(_ key: String, inCollection collection: String) -> AnyObject? {
         return object(forKey: key, inCollection: collection) as AnyObject?
     }
     
-    func enumerateKeys(inCollection collection: String, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateKeys(inCollection collection: String, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
         enumerateKeys(inCollection: collection, using: block)
     }
     
-    func enumerateKeysAndObjects(inCollection collection: String, block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateKeysAndObjects(inCollection collection: String, block: @escaping (String, Any, UnsafeMutablePointer<ObjCBool>) -> Void) {
         enumerateKeysAndObjects(inCollection: collection, using: block)
     }
 }
 
 extension YapDatabaseReadWriteTransaction: WriteTransaction {
-    func save(_ object: Persistable) {
+    public func save(_ object: Persistable) {
         setObject(object, forKey: object.key, inCollection: type(of: object).collection, withMetadata: nil)
     }
     
-    func save(_ object: Any, forKey key: String, inCollection collection: String) {
+    public func save(_ object: Any, forKey key: String, inCollection collection: String) {
         setObject(object, forKey: key, inCollection: collection)
     }
     
-    func delete(_ object: Persistable) {
+    public func delete(_ object: Persistable) {
         delete(withKey: object.key, inCollection: type(of: object).collection)
     }
-    func delete(withKey key: String, inCollection collection: String) {
+    
+    public func delete(withKey key: String, inCollection collection: String) {
         removeObject(forKey: key, inCollection: collection)
     }
 }

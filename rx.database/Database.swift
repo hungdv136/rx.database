@@ -8,8 +8,8 @@
 
 import YapDatabase
 
-final class Database {
-    init(databaseName: String) {
+public final class Database {
+    public init(databaseName: String) {
         path = Database.createPath(for: databaseName)
         db = YapDatabase(path: path)
         db.defaultObjectPolicy = .share
@@ -20,12 +20,12 @@ final class Database {
     //MARK: Properties
     
     private let path: String
-    let connection: DbConnection
+    public let connection: DbConnection
     private let db: YapDatabase
 }
 
 extension Database {
-    static func delete(databaseName: String) {
+    public static func delete(databaseName: String) {
         let path = createPath(for: databaseName)
         do {
             try FileManager.default.removeItem(atPath: path)
@@ -39,7 +39,7 @@ extension Database {
         catch { }
     }
     
-    static func exists(databaseName: String) -> Bool {
+    public static func exists(databaseName: String) -> Bool {
         return FileManager.default.fileExists(atPath: createPath(for: databaseName))
     }
     

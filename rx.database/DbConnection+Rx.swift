@@ -8,18 +8,18 @@
 
 import RxSwift
 
-struct DbConnectionReactive {
+public struct DbConnectionReactive {
     fileprivate let base: DbConnection
 }
 
 extension DbConnection {
-    var rx: DbConnectionReactive {
+    public var rx: DbConnectionReactive {
         return DbConnectionReactive(base: self)
     }
 }
 
 extension DbConnectionReactive {
-    func read<T>(_ block: @escaping (ReadTransaction) -> T) -> Observable<T> {
+    public func read<T>(_ block: @escaping (ReadTransaction) -> T) -> Observable<T> {
         return Observable.create { observer in
             var result: T!
             self.base.asyncRead({ tx in
@@ -32,7 +32,7 @@ extension DbConnectionReactive {
         }
     }
     
-    func write(_ block: @escaping (WriteTransaction) -> Void) -> Observable<Void> {
+    public func write(_ block: @escaping (WriteTransaction) -> Void) -> Observable<Void> {
         return Observable.create { observer in
             self.base.asyncWrite(block) {
                 observer.onNext()

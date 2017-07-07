@@ -9,7 +9,7 @@
 import Foundation
 import YapDatabase
 
-protocol DbConnection {
+public protocol DbConnection {
     func read(_ block: @escaping (ReadTransaction) -> Void)
     func asyncRead(_ block: @escaping (ReadTransaction) -> Void, completionQueue: DispatchQueue?, completion: (() -> Void)?)
     
@@ -34,15 +34,15 @@ extension DbConnection {
 }
 
 extension YapDatabaseConnection: DbConnection {
-    func read(_ block: @escaping (ReadTransaction) -> Void) {
+    public func read(_ block: @escaping (ReadTransaction) -> Void) {
         read(block as ((YapDatabaseReadTransaction) -> Void))
     }
     
-    func asyncRead(_ block: @escaping (ReadTransaction) -> Void, completionQueue: DispatchQueue?, completion: (() -> Void)?) {
+    public func asyncRead(_ block: @escaping (ReadTransaction) -> Void, completionQueue: DispatchQueue?, completion: (() -> Void)?) {
         asyncRead(block, completionQueue: completionQueue, completionBlock: completion)
     }
     
-    func write(_ block: @escaping (WriteTransaction) throws -> Void) rethrows {
+    public func write(_ block: @escaping (WriteTransaction) throws -> Void) rethrows {
         var failure: Error?
         readWrite { tx in
             do {
@@ -58,7 +58,7 @@ extension YapDatabaseConnection: DbConnection {
         }
     }
     
-    func asyncWrite(_ block: @escaping (WriteTransaction) throws -> Void, completionQueue: DispatchQueue?, completion: (() -> Void)?) {
+    public func asyncWrite(_ block: @escaping (WriteTransaction) throws -> Void, completionQueue: DispatchQueue?, completion: (() -> Void)?) {
         asyncReadWrite({ tx in
             do {
                 try block(tx)
